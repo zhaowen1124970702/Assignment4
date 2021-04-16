@@ -2,6 +2,8 @@ package DynamoDB;
 
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -14,19 +16,25 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class InitialDB {
   public static String TABLENAME = "A4_Supermarket";
-  public static void main(String[] args) {
+  public static Table createDynamoDBTable() {
 
-
-    AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+    AmazonDynamoDBAsync ddbAsync = AmazonDynamoDBAsyncClientBuilder.standard()
         .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-east-1"))
+        .withExecutorFactory(() -> Executors.newFixedThreadPool(20))
         .build();
-    DynamoDB dynamoDB = new DynamoDB(client);
+
+    DynamoDB dynamoDB = new DynamoDB(ddbAsync);
+//    if(dynamoDB.getTable(TABLENAME) != null){
+//
+//    }
+    Table table = null;
     try{
       System.out.println("Attempting to create table; please wait...");
-      Table table = dynamoDB.createTable(TABLENAME,
+      table = dynamoDB.createTable(TABLENAME,
           Arrays.asList(new KeySchemaElement("storeID", KeyType.HASH),
               new KeySchemaElement("customerID", KeyType.RANGE)), // Partition
           // key
@@ -35,10 +43,12 @@ public class InitialDB {
           new ProvisionedThroughput(10L, 10L));
       table.waitForActive();
       System.out.println("Success.  Table status: " + table.getDescription().getTableStatus());
+      return table;
 
     }catch (Exception e){
       System.err.println("Unable to create table: ");
       System.err.println(e.getMessage());
+      return table;
     }
 
 

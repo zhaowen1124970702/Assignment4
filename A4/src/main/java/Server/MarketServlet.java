@@ -1,6 +1,7 @@
 package Server;
 
 import DB.MarketDao;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -11,9 +12,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import DynamoDB.*;
+
 
 @WebServlet(name = "Servlet")
 public class MarketServlet extends HttpServlet {
+
+  private Table table = null;
+
+  @Override
+  public void init() throws ServletException {
+    InitialDB db = new InitialDB();
+    table = db.createDynamoDBTable();
+  }
 
   protected void doPost(HttpServletRequest request,
       HttpServletResponse response)
@@ -53,16 +64,25 @@ public class MarketServlet extends HttpServlet {
       }
 
       // connect database
-      String cusID = split[1];
-      String storeID = split[3];
+      Integer cusID = Integer.valueOf(split[1]);
+      Integer storeID = Integer.valueOf(split[3]);
       String orderDate = split[5];
       String purchase = jsonBody.toString();
 
 //      MarketDao marketDao = new MarketDao();
 //      marketDao.createMarketDao(storeID, cusID,orderDate,purchase);
+      boolean isSuccess;
+      Write2DB db = new Write2DB();
+      isSuccess = db.loadData(storeID,cusID,orderDate,purchase,table);
 
-      response.setStatus(HttpServletResponse.SC_OK);
-      response.getWriter().write("200: Write data successfully!");
+      if(isSuccess){
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write("200: Write data successfully!");
+      }else{
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write("200: Write data successfully!");
+      }
+
     }
   }
 
