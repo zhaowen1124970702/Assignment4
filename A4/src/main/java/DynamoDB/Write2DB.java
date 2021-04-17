@@ -23,6 +23,13 @@ import java.util.concurrent.Executors;
 
 public class Write2DB {
 
+  public final static AmazonDynamoDBAsync ddbAsync = AmazonDynamoDBAsyncClientBuilder.standard()
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-east-1.amazonaws.com", "us-east-1"))
+      .withExecutorFactory(() -> Executors.newFixedThreadPool(20))
+      .build();
+  public final static DynamoDB dynamoDB = new DynamoDB(ddbAsync);
+  public static Table table = dynamoDB.getTable("A4_Market2");
+
   public static Boolean loadData(int storeID,int customerID, String orderDate,String purchase) {
 //    int storeID = Integer.valueOf(args[0]);
 //    int customerID = Integer.valueOf(args[1]);
@@ -40,15 +47,6 @@ public class Write2DB {
 //        .build();
 
     String purchaseID = UUID.randomUUID().toString().replace("-", "");
-
-    AmazonDynamoDBAsync ddbAsync = AmazonDynamoDBAsyncClientBuilder.standard()
-        .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-east-1.amazonaws.com", "us-east-1"))
-        .withExecutorFactory(() -> Executors.newFixedThreadPool(20))
-        .build();
-
-    DynamoDB dynamoDB = new DynamoDB(ddbAsync);
-    Table table = dynamoDB.getTable("A4_Market2");
-
     final Map<String, Object> infoMap = new HashMap<String, Object>();
     infoMap.put("customerID", customerID);
     infoMap.put("orderDate", orderDate);
