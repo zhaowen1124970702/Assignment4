@@ -18,8 +18,13 @@ public class Write2DB {
 
   public final static AmazonDynamoDBAsync ddbAsync = AmazonDynamoDBAsyncClientBuilder.standard()
       .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-east-1.amazonaws.com", "us-east-1"))
-      .withExecutorFactory(() -> Executors.newFixedThreadPool(20))
+      .withExecutorFactory(() -> Executors.newFixedThreadPool(32))
       .build();
+
+//  public final static AmazonDynamoDBAsync ddbAsync = AmazonDynamoDBAsyncClientBuilder.standard()
+//      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://localhost:8000", "us-east-1"))
+//      .withExecutorFactory(() -> Executors.newFixedThreadPool(32))
+//      .build();
   public final static DynamoDB dynamoDB = new DynamoDB(ddbAsync);
   public static Table table = dynamoDB.getTable("A4_Market2");
 
