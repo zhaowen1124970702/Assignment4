@@ -1,6 +1,5 @@
 package Server;
 
-import DB.MarketDao;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,15 +16,6 @@ import DynamoDB.*;
 
 @WebServlet(name = "Servlet")
 public class MarketServlet extends HttpServlet {
-
-  private Table table = null;
-
-//  @Override
-//  public void init() throws ServletException {
-//    InitialDB db = new InitialDB();
-//    table = db.createDynamoDBTable();
-//  }
-
   protected void doPost(HttpServletRequest request,
       HttpServletResponse response)
       throws ServletException, IOException {
@@ -69,8 +59,6 @@ public class MarketServlet extends HttpServlet {
       String orderDate = split[5];
       String purchase = jsonBody.toString();
 
-//      MarketDao marketDao = new MarketDao();
-//      marketDao.createMarketDao(storeID, cusID,orderDate,purchase);
       boolean isSuccess;
       Write2DB db = new Write2DB();
       isSuccess = db.loadData(storeID,cusID,orderDate,purchase);
@@ -80,7 +68,7 @@ public class MarketServlet extends HttpServlet {
         response.getWriter().write("200: Write data successfully!");
       }else{
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write("200: Write data successfully!");
+        response.getWriter().write("400: Write data unsuccessfully!");
       }
 
     }
