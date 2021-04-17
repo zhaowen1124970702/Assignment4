@@ -28,9 +28,6 @@ public class InitialDB {
         .build();
 
     DynamoDB dynamoDB = new DynamoDB(ddbAsync);
-//    if(dynamoDB.getTable(TABLENAME) != null){
-//
-//    }
     Table table = null;
     try{
       System.out.println("Attempting to create table; please wait...");

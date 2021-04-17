@@ -20,11 +20,11 @@ public class MarketServlet extends HttpServlet {
 
   private Table table = null;
 
-  @Override
-  public void init() throws ServletException {
-    InitialDB db = new InitialDB();
-    table = db.createDynamoDBTable();
-  }
+//  @Override
+//  public void init() throws ServletException {
+//    InitialDB db = new InitialDB();
+//    table = db.createDynamoDBTable();
+//  }
 
   protected void doPost(HttpServletRequest request,
       HttpServletResponse response)
@@ -73,7 +73,7 @@ public class MarketServlet extends HttpServlet {
 //      marketDao.createMarketDao(storeID, cusID,orderDate,purchase);
       boolean isSuccess;
       Write2DB db = new Write2DB();
-      isSuccess = db.loadData(storeID,cusID,orderDate,purchase,table);
+      isSuccess = db.loadData(storeID,cusID,orderDate,purchase);
 
       if(isSuccess){
         response.setStatus(HttpServletResponse.SC_OK);
